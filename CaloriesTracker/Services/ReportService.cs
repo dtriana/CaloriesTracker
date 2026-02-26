@@ -16,9 +16,9 @@ namespace CaloriesTracker.Services
             _calorieService = calorieService;
         }
 
-        public async Task<DailyReportViewModel> GetDailyReportAsync(string userId, DateTime date)
+        public async Task<DailyReportViewModel> GetDailyReportAsync(string userId, DateOnly date)
         {
-            var summary = await _calorieService.GetDailySummaryAsync(userId, date);
+            var summary = await _calorieService.GetDailySummaryAsync(userId, date,0);
 
             var intakes = summary.Intakes ?? new List<DailyIntake>();
 
@@ -38,10 +38,10 @@ namespace CaloriesTracker.Services
                         if (i.Product == null) return null;
 
                         double qty = (double)i.Quantity;
-                        double cal100 = (double)i.Product.CaloriesPer100g;
-                        double prot100 = (double)i.Product.ProteinPer100g;
-                        double fat100 = (double)i.Product.FatPer100g;
-                        double carb100 = (double)i.Product.CarbsPer100g;
+                        double cal100 = (double)i.Product.CaloriesPerPortion;
+                        double prot100 = (double)i.Product.ProteinPerPortion;
+                        double fat100 = (double)i.Product.FatPerPortion;
+                        double carb100 = (double)i.Product.CarbsPerPortion;
 
                         return new ConsumedProductViewModel
                         {

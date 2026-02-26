@@ -19,7 +19,7 @@ public class HomeController : Controller
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (userId == null) return Challenge(); // Redirect to login if not authenticated
 
-        var model = await _calorieService.GetDailySummaryAsync(userId, DateTime.Today);
+        var model = await _calorieService.GetDailySummaryAsync(userId, DateOnly.FromDateTime(DateTime.Today),0);
         return View(model);
     }
 }

@@ -5,6 +5,6 @@ namespace CaloriesTracker.Services.Interfaces
 {
     public interface IDailySummaryService
     {
-        DailySummary Generate(List<DailyIntake> intakes, DateTime date, int dailyGoal);
+        DailySummary Generate(List<DailyIntake> intakes, DateOnly date, int dailyGoal);
     }
 }

@@ -77,10 +77,9 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Product</th>
+                                    <th>Food</th>
                                     <th>Quantity</th>
                                     <th>Calories</th>
-                                    <th>Time</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,9 +87,8 @@
                                 {
                                     <tr>
                                         <td>@intake.Product.Name</td>
-                                        <td>@intake.Quantity.ToString("F1")g</td>
-                                        <td>@((int)(intake.Product.CaloriesPer100g * intake.Quantity / 100))</td>
-                                        <td>@intake.Date.ToString("HH:mm")</td>
+                                        <td>@intake.Quantity.ToString("F1") @intake.Product.PortionName</td>
+                                        <td>@((int)(intake.Product.CaloriesPerPortion * intake.Quantity / 100))</td>
                                     </tr>
                                 }
                             </tbody>

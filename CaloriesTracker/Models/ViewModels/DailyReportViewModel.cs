@@ -2,7 +2,7 @@
 {
     public class DailyReportViewModel
     {
-        public DateTime Date { get; set; }
+        public DateOnly Date { get; set; }
         public double TotalCalories { get; set; }
         public double DailyGoal { get; set; }
         public double TotalProtein { get; set; }

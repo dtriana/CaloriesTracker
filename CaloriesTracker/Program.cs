@@ -4,17 +4,11 @@ using CaloriesTracker.Services;
 using CaloriesTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 21))
-    )
-);
+builder.AddSqlServerDbContext<AppDbContext>(connectionName: "calories-tracking-db");
 
 // Configure Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -31,13 +25,15 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<IDailySummaryService, DailySummaryService>();
+builder.Services.AddScoped<IProductNutritionCalculator, ProductNutritionCalculator>();
+builder.Services.AddScoped<IUserStatsService, UserStatsService>();
+builder.Services.AddScoped<FoodService>();
 builder.Services.AddScoped<CalorieService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<ICalorieCalculatorService, CalorieCalculatorService>();
 builder.Services.AddScoped<IDateTimeProvider, SystemDateTimeProvider>();
-builder.Services.AddScoped<CalorieService>();
 
 builder.Services.AddControllersWithViews();
 

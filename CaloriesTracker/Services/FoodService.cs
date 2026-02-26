@@ -5,20 +5,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CaloriesTracker.Services
 {
-    public class ProductService
+    public class FoodService(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _context = context;
 
-        public ProductService(AppDbContext context)
+        public async Task<Food> AddFoodAsync(Food food, string userId)
         {
-            _context = context;
-        }
+            food.UserId = userId;
+            food.User = null;
 
-        public async Task<Product> AddProductAsync(Product product)
-        {
-            _context.Products.Add(product);
+            _context.Products.Add(food);
             await _context.SaveChangesAsync();
-            return product;
+            return food;
         }
 
         public async Task<bool> DeleteProductAsync(int productId, string userId)
@@ -33,7 +31,7 @@ namespace CaloriesTracker.Services
             return true;
         }
 
-        public async Task<List<Product>> GetUserProductsAsync(string userId)
+        public async Task<List<Food>> GetUserProductsAsync(string userId)
         {
             return await _context.Products
                 .Where(p => p.UserId == userId)
@@ -41,13 +39,13 @@ namespace CaloriesTracker.Services
         }
 
         [return: MaybeNull]
-        public async Task<Product> GetProductByIdAsync(int productId, string userId)
+        public async Task<Food> GetProductByIdAsync(int productId, string userId)
         {
             return await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == productId && p.UserId == userId);
         }
 
-        public async Task<bool> UpdateProductAsync(Product updatedProduct, string userId)
+        public async Task<bool> UpdateProductAsync(Food updatedProduct, string userId)
         {
             var existingProduct = await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == updatedProduct.Id && p.UserId == userId);
@@ -55,10 +53,10 @@ namespace CaloriesTracker.Services
             if (existingProduct == null) return false;
 
             existingProduct.Name = updatedProduct.Name;
-            existingProduct.CaloriesPer100g = updatedProduct.CaloriesPer100g;
-            existingProduct.ProteinPer100g = updatedProduct.ProteinPer100g;
-            existingProduct.FatPer100g = updatedProduct.FatPer100g;
-            existingProduct.CarbsPer100g = updatedProduct.CarbsPer100g;
+            existingProduct.CaloriesPerPortion = updatedProduct.CaloriesPerPortion;
+            existingProduct.ProteinPerPortion = updatedProduct.ProteinPerPortion;
+            existingProduct.FatPerPortion = updatedProduct.FatPerPortion;
+            existingProduct.CarbsPerPortion = updatedProduct.CarbsPerPortion;
 
             await _context.SaveChangesAsync();
             return true;

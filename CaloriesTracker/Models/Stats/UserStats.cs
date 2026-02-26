@@ -2,6 +2,8 @@
 {
     public class UserStats
     {
+        public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
         public decimal TotalCalories { get; set; }
         public decimal AverageDailyCalories { get; set; }
         public int DaysTracked { get; set; }

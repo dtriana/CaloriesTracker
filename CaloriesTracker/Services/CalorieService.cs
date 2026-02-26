@@ -20,13 +20,13 @@ namespace CaloriesTracker.Services
 
     public class CalorieService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AppDbContext _context;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IDailySummaryService _summaryService;
         private readonly IUserStatsService _userStatsService;
 
         public CalorieService(
-            ApplicationDbContext context,
+            AppDbContext context,
             IDateTimeProvider dateTimeProvider,
             IDailySummaryService summaryService,
             IUserStatsService userStatsService)
@@ -37,15 +37,15 @@ namespace CaloriesTracker.Services
             _userStatsService = userStatsService;
         }
 
-        public async Task<List<DailyIntake>> GetDailyIntakeAsync(string userId, DateTime date)
+        public async Task<List<DailyIntake>> GetDailyIntakeAsync(string userId, DateOnly date)
         {
             return await _context.DailyIntakes
                 .Include(i => i.Product)
-                .Where(i => i.UserId == userId && i.Date.Date == date.Date)
+                .Where(i => i.UserId == userId && i.Date == date)
                 .ToListAsync();
         }
 
-        public async Task AddIntakeAsync(string userId, int productId, decimal quantity)
+        public async Task AddIntakeAsync(string userId, int productId, decimal quantity, DateOnly date)
         {
             var product = await _context.Products.FindAsync(productId);
             if (product == null) throw new Exception("Product not found.");
@@ -55,7 +55,7 @@ namespace CaloriesTracker.Services
                 UserId = userId,
                 ProductId = productId,
                 Quantity = quantity,
-                Date = _dateTimeProvider.Now
+                Date = date
             };
 
             _context.DailyIntakes.Add(intake);
@@ -78,26 +78,25 @@ namespace CaloriesTracker.Services
             if (intake != null)
             {
                 intake.Quantity = newQuantity;
-                intake.Date = _dateTimeProvider.Now;
+                intake.Date = DateOnly.FromDateTime(_dateTimeProvider.Now);
                 await _context.SaveChangesAsync();
             }
         }
 
-        public async Task<DailySummary> GetDailySummaryAsync(string userId, DateTime date, int dailyGoal)
+        public async Task<DailySummary> GetDailySummaryAsync(string userId, DateOnly date, int dailyGoal)
         {
             var intakes = await GetDailyIntakeAsync(userId, date);
             return _summaryService.Generate(intakes, date, dailyGoal);
         }
 
-        public async Task<UserStats> GetUserStatsAsync(string userId, DateTime startDate, DateTime endDate)
+        public async Task<UserStats> GetUserStatsAsync(string userId, DateOnly startDate, DateOnly endDate)
         {
             var intakes = await _context.DailyIntakes
                 .Include(i => i.Product)
-                .Where(i => i.UserId == userId && i.Date.Date >= startDate.Date && i.Date.Date <= endDate.Date)
+                .Where(i => i.UserId == userId && i.Date >= startDate && i.Date <= endDate)
                 .ToListAsync();
 
             return _userStatsService.Generate(intakes, startDate, endDate);
         }
     }
-
 }

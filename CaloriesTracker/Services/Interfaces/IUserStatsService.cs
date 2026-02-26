@@ -5,6 +5,6 @@ namespace CaloriesTracker.Services.Interfaces
 {
     public interface IUserStatsService
     {
-        UserStats Generate(List<DailyIntake> intakes, DateTime start, DateTime end);
+        UserStats Generate(List<DailyIntake> intakes, DateOnly start, DateOnly end);
     }
 }

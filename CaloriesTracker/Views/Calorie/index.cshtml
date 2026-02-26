@@ -21,7 +21,7 @@
                         <h5>Calories</h5>
                         <div class="progress mb-3">
                             @{
-                                var progressPercentage = Math.Min(100, (int)(Model.TotalCalories / Model.DailyGoal * 100));
+                                var progressPercentage = Math.Min(100, (int)(Model.TotalCalories / ((Model.DailyGoal == 0)?1600:Model.DailyGoal) * 100));
                             }
                             <div class="progress-bar" role="progressbar"
                                  style="width: @progressPercentage%"
@@ -137,10 +137,10 @@
 
 
 
-                                        <td>@((int)(intake.Product.CaloriesPer100g * intake.Quantity / 100))</td>
-                                        <td>@((intake.Product.ProteinPer100g * intake.Quantity / 100).ToString("F1"))g</td>
-                                        <td>@((intake.Product.FatPer100g * intake.Quantity / 100).ToString("F1"))g</td>
-                                        <td>@((intake.Product.CarbsPer100g * intake.Quantity / 100).ToString("F1"))g</td>
+                                        <td>@((int)(intake.Product.CaloriesPerPortion * intake.Quantity / 100))</td>
+                                        <td>@((intake.Product.ProteinPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
+                                        <td>@((intake.Product.FatPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
+                                        <td>@((intake.Product.CarbsPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
                                         <td>
                                             <form asp-action="RemoveIntake" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@intake.Id" />

@@ -4,9 +4,9 @@ namespace CaloriesTracker.Services.Interfaces
 {
     public interface IProductNutritionCalculator
     {
-        decimal CalculateCalories(Product product, decimal quantity);
-        decimal CalculateProtein(Product product, decimal quantity);
-        decimal CalculateFat(Product product, decimal quantity);
-        decimal CalculateCarbs(Product product, decimal quantity);
+        decimal CalculateCalories(Food product, decimal quantity);
+        decimal CalculateProtein(Food product, decimal quantity);
+        decimal CalculateFat(Food product, decimal quantity);
+        decimal CalculateCarbs(Food product, decimal quantity);
     }
 }

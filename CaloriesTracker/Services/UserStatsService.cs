@@ -13,7 +13,7 @@ namespace CaloriesTracker.Services
             _calculator = calculator;
         }
 
-        public UserStats Generate(List<DailyIntake> intakes, DateTime start, DateTime end)
+        public UserStats Generate(List<DailyIntake> intakes, DateOnly start, DateOnly end)
         {
             return new UserStats
             {

@@ -23,7 +23,7 @@ namespace CaloriesTracker.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
 
-            var now = DateTime.Today;
+            var now = DateOnly.FromDateTime(DateTime.Today);
             var stats = new StatsViewModel();
 
             // Останні 2 тижні

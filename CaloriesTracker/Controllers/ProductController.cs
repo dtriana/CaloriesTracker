@@ -9,9 +9,9 @@ namespace CaloriesTracker.Controllers
     [Authorize]
     public class ProductController : Controller
     {
-        private readonly ProductService _productService;
+        private readonly FoodService _productService;
 
-        public ProductController(ProductService productService)
+        public ProductController(FoodService productService)
         {
             _productService = productService;
         }
@@ -26,8 +26,8 @@ namespace CaloriesTracker.Controllers
 
             products = sortBy switch
             {
-                "Calories" => products.OrderByDescending(p => p.CaloriesPer100g).ToList(),
-                "Protein" => products.OrderByDescending(p => p.ProteinPer100g).ToList(),
+                "Calories" => products.OrderByDescending(p => p.CaloriesPerPortion).ToList(),
+                "Protein" => products.OrderByDescending(p => p.ProteinPerPortion).ToList(),
                 _ => products.OrderBy(p => p.Name).ToList(),
             };
 
@@ -37,28 +37,11 @@ namespace CaloriesTracker.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Add(Product product)
+        public async Task<IActionResult> Add(Food food)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
-
-            var culture = System.Globalization.CultureInfo.InvariantCulture;
-
-            try
-            {
-                product.CaloriesPer100g = Convert.ToDecimal(Request.Form["CaloriesPer100g"].ToString().Replace(',', '.'), culture);
-                product.ProteinPer100g = Convert.ToDecimal(Request.Form["ProteinPer100g"].ToString().Replace(',', '.'), culture);
-                product.FatPer100g = Convert.ToDecimal(Request.Form["FatPer100g"].ToString().Replace(',', '.'), culture);
-                product.CarbsPer100g = Convert.ToDecimal(Request.Form["CarbsPer100g"].ToString().Replace(',', '.'), culture);
-            }
-            catch
-            {
-                ModelState.AddModelError("", "Invalid number format. Use dot or comma as decimal separator.");
-                return View("Index", await _productService.GetUserProductsAsync(userId));
-            }
-
-            product.UserId = userId;
-            await _productService.AddProductAsync(product);
+            await _productService.AddFoodAsync(food, userId);
             return RedirectToAction("Index");
         }
 
@@ -101,7 +84,7 @@ namespace CaloriesTracker.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Product product)
+        public async Task<IActionResult> Edit(Food product)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
@@ -110,10 +93,10 @@ namespace CaloriesTracker.Controllers
 
             try
             {
-                product.CaloriesPer100g = Convert.ToDecimal(Request.Form["CaloriesPer100g"].ToString().Replace(',', '.'), culture);
-                product.ProteinPer100g = Convert.ToDecimal(Request.Form["ProteinPer100g"].ToString().Replace(',', '.'), culture);
-                product.FatPer100g = Convert.ToDecimal(Request.Form["FatPer100g"].ToString().Replace(',', '.'), culture);
-                product.CarbsPer100g = Convert.ToDecimal(Request.Form["CarbsPer100g"].ToString().Replace(',', '.'), culture);
+                product.CaloriesPerPortion = Convert.ToDecimal(Request.Form["CaloriesPer100g"].ToString().Replace(',', '.'), culture);
+                product.ProteinPerPortion = Convert.ToDecimal(Request.Form["ProteinPer100g"].ToString().Replace(',', '.'), culture);
+                product.FatPerPortion = Convert.ToDecimal(Request.Form["FatPer100g"].ToString().Replace(',', '.'), culture);
+                product.CarbsPerPortion = Convert.ToDecimal(Request.Form["CarbsPer100g"].ToString().Replace(',', '.'), culture);
             }
             catch
             {

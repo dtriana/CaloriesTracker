@@ -19,12 +19,12 @@ namespace CaloriesTracker.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Daily(DateTime? date)
+        public async Task<IActionResult> Daily(DateOnly? date)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            var viewDate = date ?? DateTime.Today;
+            var viewDate = date ?? DateOnly.FromDateTime(DateTime.Today);
             DailyReportViewModel vm = await _reportService.GetDailyReportAsync(userId, viewDate);
             return View(vm);   
         }

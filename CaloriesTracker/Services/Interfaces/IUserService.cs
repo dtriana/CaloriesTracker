@@ -15,7 +15,5 @@ namespace CaloriesTracker.Services.Interfaces
         Task<decimal> GetCurrentDailyGoalAsync(string userId);
         Task<IdentityResult> UpdateDailyGoalAsync(string userId, decimal newGoal);
         Task<IdentityResult> DeleteUserAsync(string userId);
-        UserStats Generate(List<DailyIntake> intakes, DateTime start, DateTime end);
-
     }
 }

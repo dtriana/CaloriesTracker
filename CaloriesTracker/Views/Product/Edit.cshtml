@@ -1,4 +1,4 @@
-﻿@model Product
+﻿@model Food
 
 @{
     ViewData["Title"] = "Edit Product";
@@ -23,27 +23,27 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="CaloriesPer100g" class="form-label"></label>
-                            <input asp-for="CaloriesPer100g" class="form-control" />
-                            <span asp-validation-for="CaloriesPer100g" class="text-danger"></span>
+                            <label asp-for="CaloriesPerPortion" class="form-label"></label>
+                            <input asp-for="CaloriesPerPortion" class="form-control" />
+                            <span asp-validation-for="CaloriesPerPortion" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="ProteinPer100g" class="form-label"></label>
-                            <input asp-for="ProteinPer100g" class="form-control" />
-                            <span asp-validation-for="ProteinPer100g" class="text-danger"></span>
+                            <label asp-for="ProteinPerPortion" class="form-label"></label>
+                            <input asp-for="ProteinPerPortion" class="form-control" />
+                            <span asp-validation-for="ProteinPerPortion" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="FatPer100g" class="form-label"></label>
-                            <input asp-for="FatPer100g" class="form-control" />
-                            <span asp-validation-for="FatPer100g" class="text-danger"></span>
+                            <label asp-for="FatPerPortion" class="form-label"></label>
+                            <input asp-for="FatPerPortion" class="form-control" />
+                            <span asp-validation-for="FatPerPortion" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="CarbsPer100g" class="form-label"></label>
-                            <input asp-for="CarbsPer100g" class="form-control" />
-                            <span asp-validation-for="CarbsPer100g" class="text-danger"></span>
+                            <label asp-for="CarbsPerPortion" class="form-label"></label>
+                            <input asp-for="CarbsPerPortion" class="form-control" />
+                            <span asp-validation-for="CarbsPerPortion" class="text-danger"></span>
                         </div>
                     </div>
 
