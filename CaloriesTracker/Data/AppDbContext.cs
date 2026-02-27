@@ -11,6 +11,7 @@ namespace CaloriesTracker.Data
         public DbSet<Food> Products { get; set; }
         public DbSet<DailyIntake> DailyIntakes { get; set; }
         public DbSet<FileRecord> FileRecords { get; set; }
+        public DbSet<DailyWeight> DailyWeight { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -22,16 +23,16 @@ namespace CaloriesTracker.Data
                 .HasForeignKey(p => p.UserId);
             builder.Entity<Food>()
                 .Property(e => e.ProteinPerPortion)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
             builder.Entity<Food>()
                 .Property(e => e.CarbsPerPortion)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
             builder.Entity<Food>()
                 .Property(e => e.CaloriesPerPortion)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
             builder.Entity<Food>()
                 .Property(e => e.FatPerPortion)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
             builder.Entity<DailyIntake>()
                 .HasOne(d => d.User)
                 .WithMany(u => u.DailyIntakes)
@@ -43,14 +44,23 @@ namespace CaloriesTracker.Data
                 .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<DailyIntake>()
                 .Property(e => e.Quantity)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
             builder.Entity<FileRecord>()
                 .HasOne(f => f.User)
                 .WithMany()
                 .HasForeignKey(f => f.UserId);
             builder.Entity<User>()
                 .Property(e => e.DailyCalorieGoal)
-                .HasPrecision(18, 4);
+                .HasPrecision(8, 2);
+            builder.Entity<DailyWeight>()
+                .HasKey(w => new { w.UserId, w.Date });
+            builder.Entity<DailyWeight>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId);
+            builder.Entity<DailyWeight>()
+                .Property(e => e.WeightInKg)
+                .HasPrecision(8, 2);
         }
     }
 }

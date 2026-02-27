@@ -1,0 +1,42 @@
+@model IEnumerable<CaloriesTracker.Models.DailyWeight>
+
+@{
+    ViewData["Title"] = "Daily Weight";
+}
+
+<h2>Daily Weight</h2>
+
+<form asp-action="Add" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="date" class="form-control" id="date" name="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-group">
+        <label for="weigthInKg">Weight (kg)</label>
+        <input type="number" step="0.01" class="form-control" id="weigthInKg" name="weigthInKg" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
+
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Weight (kg)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var w in Model)
+        {
+            <tr>
+                <td>@w.Date.ToString("yyyy-MM-dd")</td>
+                <td>@w.WeightInKg</td>
+            </tr>
+        }
+    </tbody>
+</table>
