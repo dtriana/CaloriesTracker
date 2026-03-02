@@ -91,25 +91,12 @@ namespace CaloriesTracker.Controllers
 
             var culture = System.Globalization.CultureInfo.InvariantCulture;
 
-            try
-            {
-                product.CaloriesPerPortion = Convert.ToDecimal(Request.Form["CaloriesPer100g"].ToString().Replace(',', '.'), culture);
-                product.ProteinPerPortion = Convert.ToDecimal(Request.Form["ProteinPer100g"].ToString().Replace(',', '.'), culture);
-                product.FatPerPortion = Convert.ToDecimal(Request.Form["FatPer100g"].ToString().Replace(',', '.'), culture);
-                product.CarbsPerPortion = Convert.ToDecimal(Request.Form["CarbsPer100g"].ToString().Replace(',', '.'), culture);
-            }
-            catch
-            {
-                ModelState.AddModelError("", "Invalid number format. Use dot or comma as decimal separator.");
-                return View(product);
-            }
-
             if (!ModelState.IsValid) return View(product);
 
             product.UserId = userId;
             var success = await _productService.UpdateProductAsync(product, userId);
 
-            if (!success) return NotFound();
+            if (!success) return Unauthorized();
 
             return RedirectToAction("Index");
         }

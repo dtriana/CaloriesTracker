@@ -38,8 +38,7 @@ namespace CaloriesTracker.Services
                 .ToListAsync();
         }
 
-        [return: MaybeNull]
-        public async Task<Food> GetProductByIdAsync(int productId, string userId)
+        public async Task<Food?> GetProductByIdAsync(int productId, string userId)
         {
             return await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == productId && p.UserId == userId);
@@ -57,6 +56,8 @@ namespace CaloriesTracker.Services
             existingProduct.ProteinPerPortion = updatedProduct.ProteinPerPortion;
             existingProduct.FatPerPortion = updatedProduct.FatPerPortion;
             existingProduct.CarbsPerPortion = updatedProduct.CarbsPerPortion;
+            existingProduct.PortionName = updatedProduct.PortionName;
+            existingProduct.PortionSize = updatedProduct.PortionSize;
 
             await _context.SaveChangesAsync();
             return true;

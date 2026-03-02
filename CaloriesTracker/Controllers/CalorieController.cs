@@ -8,17 +8,8 @@ using System.Security.Claims;
 namespace CaloriesTracker.Controllers
 {
     [Authorize]
-    public class CalorieController : Controller
+    public class CalorieController(CalorieService calorieService, FoodService productService) : Controller
     {
-        private readonly CalorieService _calorieService;
-        private readonly FoodService _productService;
-
-        public CalorieController(CalorieService calorieService, FoodService productService)
-        {
-            _calorieService = calorieService;
-            _productService = productService;
-        }
-
         [HttpGet]
         public async Task<IActionResult> Index(DateOnly? date)
         {
@@ -26,11 +17,11 @@ namespace CaloriesTracker.Controllers
             if (userId == null) return Unauthorized();
 
             var viewDate = date ?? DateOnly.FromDateTime(DateTime.Today);
-            var summary = await _calorieService.GetDailySummaryAsync(userId, viewDate,0);
-            var products = await _productService.GetUserProductsAsync(userId);
+            var summary = await calorieService.GetDailySummaryAsync(userId, viewDate,0);
+            var foods = await productService.GetUserProductsAsync(userId);
 
             ViewBag.Date = viewDate;
-            ViewBag.Products = products;
+            ViewBag.Foods = foods;
 
             return View(summary);
         }
@@ -38,10 +29,10 @@ namespace CaloriesTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveIntake(int id)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
 
-            await _calorieService.RemoveIntakeAsync(id);
+            await calorieService.RemoveIntakeAsync(id);
 
             return RedirectToAction("Index");
         }
@@ -55,10 +46,10 @@ namespace CaloriesTracker.Controllers
             if (intakeDate > DateOnly.FromDateTime(DateTime.Today))
             {
                 ModelState.AddModelError("intakeDate", "Date cannot be in the future");
-                return View("Index", await _calorieService.GetDailySummaryAsync(userId, intakeDate, 0));
+                return View("Index", await calorieService.GetDailySummaryAsync(userId, intakeDate, 0));
 
             }
-            await _calorieService.AddIntakeAsync(userId, productId, quantity, intakeDate);
+            await calorieService.AddIntakeAsync(userId, productId, quantity, intakeDate);
             return RedirectToAction("Index", new { date = intakeDate });
 
         }
@@ -70,7 +61,7 @@ namespace CaloriesTracker.Controllers
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
 
-            await _calorieService.UpdateIntakeQuantityAsync(id, quantity);
+            await calorieService.UpdateIntakeQuantityAsync(id, quantity);
             return RedirectToAction("Index");
         }
 

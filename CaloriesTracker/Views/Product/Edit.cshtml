@@ -23,12 +23,25 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="CaloriesPerPortion" class="form-label"></label>
+                            <label asp-for="CaloriesPerPortion" class="form-label">Calories</label>
                             <input asp-for="CaloriesPerPortion" class="form-control" />
                             <span asp-validation-for="CaloriesPerPortion" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="ProteinPerPortion" class="form-label"></label>
+                            <label asp-for="FatPerPortion" class="form-label">Fat</label>
+                            <input asp-for="FatPerPortion" class="form-control" />
+                            <span asp-validation-for="FatPerPortion" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CarbsPerPortion" class="form-label">Carbs</label>
+                            <input asp-for="CarbsPerPortion" class="form-control" />
+                            <span asp-validation-for="CarbsPerPortion" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ProteinPerPortion" class="form-label">Protein</label>
                             <input asp-for="ProteinPerPortion" class="form-control" />
                             <span asp-validation-for="ProteinPerPortion" class="text-danger"></span>
                         </div>
@@ -36,14 +49,14 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label asp-for="FatPerPortion" class="form-label"></label>
-                            <input asp-for="FatPerPortion" class="form-control" />
-                            <span asp-validation-for="FatPerPortion" class="text-danger"></span>
+                            <label asp-for="PortionName" class="form-label">Portion Name</label>
+                            <input asp-for="PortionName" class="form-control" />
+                            <span asp-validation-for="PortionName" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label asp-for="CarbsPerPortion" class="form-label"></label>
-                            <input asp-for="CarbsPerPortion" class="form-control" />
-                            <span asp-validation-for="CarbsPerPortion" class="text-danger"></span>
+                            <label asp-for="PortionSize" class="form-label">Portion Size</label>
+                            <input asp-for="PortionSize" type="number" step="0.25" class="form-control" />
+                            <span asp-validation-for="PortionSize" class="text-danger"></span>
                         </div>
                     </div>
 

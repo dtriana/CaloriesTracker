@@ -23,20 +23,20 @@
                         <input type="text" class="form-control" id="Name" name="Name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="CaloriesPerPortion" class="form-label">Calories per 100g</label>
+                        <label for="CaloriesPerPortion" class="form-label">Calories per portion</label>
                         <input type="number" step="0.1" class="form-control" id="CaloriesPerPortion" name="CaloriesPerPortion" required>
                     </div>
                     <div class="mb-3">
-                        <label for="ProteinPerPortion" class="form-label">Protein per 100g</label>
-                        <input type="number" step="0.1" class="form-control" id="ProteinPerPortion" name="ProteinPerPortion" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="FatPerPortion" class="form-label">Fat per 100g</label>
+                        <label for="FatPerPortion" class="form-label">Fat per portion</label>
                         <input type="number" step="0.1" class="form-control" id="FatPerPortion" name="FatPerPortion" required>
                     </div>
                     <div class="mb-3">
-                        <label for="CarbsPerPortion" class="form-label">Carbs per 100g</label>
+                        <label for="CarbsPerPortion" class="form-label">Carbs per portion</label>
                         <input type="number" step="0.1" class="form-control" id="CarbsPerPortion" name="CarbsPerPortion" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ProteinPerPortion" class="form-label">Protein per portion</label>
+                        <input type="number" step="0.1" class="form-control" id="ProteinPerPortion" name="ProteinPerPortion" required>
                     </div>
                     <div class="mb-3">
                         <label for="PortionName" class="form-label">Portion Unit</label>
@@ -44,12 +44,14 @@
                             <option value="" selected disabled>Select unit</option>
                             <option value="grams">Grams</option>
                             <option value="cups">Cups</option>
+                            <option value="slices">Slices</option>
+                            <option value="capsules">Capsules</option>
                             <option value="servings">Servings</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="PortionSize" class="form-label">Portion Size</label>
-                        <input type="number" step="1" class="form-control" id="PortionSize" name="PortionSize" required>
+                        <input type="number" step="0.25" class="form-control" id="PortionSize" name="PortionSize" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add Food</button>
                 </form>
@@ -76,9 +78,9 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Calories</th>
-                                    <th>Protein</th>
                                     <th>Fat</th>
                                     <th>Carbs</th>
+                                    <th>Protein</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -88,9 +90,9 @@
                                     <tr>
                                         <td>@product.Name</td>
                                         <td>@product.CaloriesPerPortion.ToString("F1")</td>
-                                        <td>@product.ProteinPerPortion.ToString("F1")</td>
                                         <td>@product.FatPerPortion.ToString("F1")</td>
                                         <td>@product.CarbsPerPortion.ToString("F1")</td>
+                                        <td>@product.ProteinPerPortion.ToString("F1")</td>
                                         <td>
                                             <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-primary">
                                                 <i class="bi bi-pencil"></i>

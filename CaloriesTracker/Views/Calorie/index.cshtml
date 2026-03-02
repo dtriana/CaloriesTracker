@@ -70,15 +70,15 @@
                     <div class="mb-3">
                         <label for="productId" class="form-label">Product</label>
                         <select class="form-select" id="productId" name="productId" required>
-                            <option value="">Select a product</option>
-                            @foreach (var product in ViewBag.Products)
+                            <option value="">Select a food</option>
+                            @foreach (var food in ViewBag.Foods)
                             {
-                                <option value="@product.Id">@product.Name</option>
+                                <option value="@food.Id" data-portion="@food.PortionName">@food.Name</option>
                             }
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity (grams)</label>
+                        <label for="quantity" class="form-label" id="quantityLabel">Quantity (<span id="portionLabel">grams</span>)</label>
                         <input type="number" step="1" class="form-control" id="quantity" name="quantity" value="100" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add to Diary</button>
@@ -111,9 +111,9 @@
                                     <th>Product</th>
                                     <th>Quantity</th>
                                     <th>Calories</th>
-                                    <th>Protein</th>
-                                    <th>Fat</th>
                                     <th>Carbs</th>
+                                    <th>Fat</th>
+                                    <th>Protein</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -125,22 +125,20 @@
                                         <td>
                                             <form asp-action="EditIntakeQuantity" method="post" class="d-flex align-items-center">
                                                 <input type="hidden" name="id" value="@intake.Id" />
-                                                <input type="number" name="quantity" min="1" step="1"
+                                                <input type="number" name="quantity" min="0.01" step="0.01"
                                                        value="@intake.Quantity.ToString("F0")"
                                                        class="form-control form-control-sm me-1" style="width: 70px;" />
+                                                       <label>@intake.Product.PortionName</label>
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
                                             </form>
                                         </td>
 
-
-
-
-                                        <td>@((int)(intake.Product.CaloriesPerPortion * intake.Quantity / 100))</td>
-                                        <td>@((intake.Product.ProteinPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
-                                        <td>@((intake.Product.FatPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
-                                        <td>@((intake.Product.CarbsPerPortion * intake.Quantity / 100).ToString("F1"))g</td>
+                                        <td>@(((intake.Quantity / intake.Product.PortionSize) * intake.Product.CaloriesPerPortion).ToString("F1"))</td>
+                                        <td>@(((intake.Quantity / intake.Product.PortionSize) * intake.Product.CarbsPerPortion).ToString("F1"))</td>
+                                        <td>@(((intake.Quantity / intake.Product.PortionSize) * intake.Product.FatPerPortion).ToString("F1"))</td>
+                                        <td>@(((intake.Quantity / intake.Product.PortionSize) * intake.Product.ProteinPerPortion).ToString("F1"))</td>
                                         <td>
                                             <form asp-action="RemoveIntake" method="post" class="d-inline">
                                                 <input type="hidden" name="id" value="@intake.Id" />
@@ -166,10 +164,31 @@
 
 @section Scripts {
     <script>
+        // keep existing intakeDate behavior
         document.getElementById('intakeDate').addEventListener('change', function () {
             // Оновити URL при зміні дати
             const selectedDate = this.value;
             window.location.href = `@Url.Action("Index")?date=${selectedDate}`;
         });
+
+        // update the portion label whenever a new food is selected
+        (function () {
+            const productSelect = document.getElementById('productId');
+            const portionLabel = document.getElementById('portionLabel');
+
+            function updatePortionLabel() {
+                const opt = productSelect.options[productSelect.selectedIndex];
+                const portion = opt?.dataset?.portion || 'grams';
+                portionLabel.textContent = portion;
+            }
+
+            // update on change
+            productSelect.addEventListener('change', updatePortionLabel);
+
+            // initialize on load (if a product is preselected)
+            document.addEventListener('DOMContentLoaded', updatePortionLabel);
+            // also run immediately in case DOMContentLoaded already fired
+            updatePortionLabel();
+        })();
     </script>
 }

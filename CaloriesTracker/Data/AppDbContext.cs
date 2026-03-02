@@ -33,6 +33,9 @@ namespace CaloriesTracker.Data
             builder.Entity<Food>()
                 .Property(e => e.FatPerPortion)
                 .HasPrecision(8, 2);
+            builder.Entity<Food>()
+                .Property(e => e.PortionSize)
+                .HasPrecision(8, 2);
             builder.Entity<DailyIntake>()
                 .HasOne(d => d.User)
                 .WithMany(u => u.DailyIntakes)
