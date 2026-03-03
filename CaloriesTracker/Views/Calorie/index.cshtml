@@ -16,6 +16,10 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+                @if (TempData["CopyMessage"] != null)
+                {
+                    <div class="alert alert-info">@TempData["CopyMessage"]</div>
+                }
                 <div class="row">
                     <div class="col-md-4">
                         <h5>Calories</h5>
@@ -79,7 +83,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label" id="quantityLabel">Quantity (<span id="portionLabel">grams</span>)</label>
-                        <input type="number" step="1" class="form-control" id="quantity" name="quantity" value="100" required>
+                        <input type="number" step="0.25" class="form-control" id="quantity" name="quantity" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Add to Diary</button>
                 </form>
@@ -91,13 +95,23 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Today's Food</h5>
-                    <div>
-                        <a href="@Url.Action("Index", new { date = date.AddDays(-1) })" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
-                        <a href="@Url.Action("Index", new { date = date.AddDays(1) })" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
+                    <div class="d-flex align-items-center">
+                        <div class="me-2">
+                            <a href="@Url.Action("Index", new { date = date.AddDays(-1) })" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                            <a href="@Url.Action("Index", new { date = date.AddDays(1) })" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+                        <form asp-action="CopyDailyIntake" method="post" class="d-flex align-items-center">
+                            <input type="hidden" name="targetDate" value="@date.ToString("yyyy-MM-dd")" />
+                            <label class="me-2 mb-0">Copy from:</label>
+                            <input type="date" name="sourceDate" class="form-control form-control-sm me-2"
+                                   value="@(date.AddDays(-1).ToString("yyyy-MM-dd"))"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Copy</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -126,7 +140,7 @@
                                             <form asp-action="EditIntakeQuantity" method="post" class="d-flex align-items-center">
                                                 <input type="hidden" name="id" value="@intake.Id" />
                                                 <input type="number" name="quantity" min="0.01" step="0.01"
-                                                       value="@intake.Quantity.ToString("F0")"
+                                                       value="@intake.Quantity.ToString("F2")"
                                                        class="form-control form-control-sm me-1" style="width: 70px;" />
                                                        <label>@intake.Product.PortionName</label>
                                                 <button type="submit" class="btn btn-sm btn-outline-secondary" title="Edit">

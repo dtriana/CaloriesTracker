@@ -35,6 +35,7 @@ namespace CaloriesTracker.Services
         {
             return await _context.Products
                 .Where(p => p.UserId == userId)
+                .AsNoTracking()
                 .ToListAsync();
         }
 

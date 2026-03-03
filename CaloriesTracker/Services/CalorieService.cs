@@ -42,6 +42,7 @@ namespace CaloriesTracker.Services
             return await _context.DailyIntakes
                 .Include(i => i.Product)
                 .Where(i => i.UserId == userId && i.Date == date)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -78,7 +79,6 @@ namespace CaloriesTracker.Services
             if (intake != null)
             {
                 intake.Quantity = newQuantity;
-                intake.Date = DateOnly.FromDateTime(_dateTimeProvider.Now);
                 await _context.SaveChangesAsync();
             }
         }
@@ -97,6 +97,37 @@ namespace CaloriesTracker.Services
                 .ToListAsync();
 
             return _userStatsService.Generate(intakes, startDate, endDate);
+        }
+
+        // Copies all intakes from sourceDate to targetDate for the given user.
+        // Returns the number of items copied, or -1 if the target date already has intakes.
+        public async Task<int> CopyDailyIntakeAsync(string userId, DateOnly sourceDate, DateOnly targetDate)
+        {
+            // load source intakes
+            var sourceIntakes = await _context.DailyIntakes
+                .Where(i => i.UserId == userId && i.Date == sourceDate)
+                .ToListAsync();
+
+            if (!sourceIntakes.Any()) return 0;
+
+            // if target already has intakes, do not duplicate
+            var targetExists = await _context.DailyIntakes
+                .AnyAsync(i => i.UserId == userId && i.Date == targetDate);
+
+            if (targetExists) return -1;
+
+            var copies = sourceIntakes.Select(i => new DailyIntake
+            {
+                UserId = userId,
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                Date = targetDate
+            }).ToList();
+
+            _context.DailyIntakes.AddRange(copies);
+            await _context.SaveChangesAsync();
+
+            return copies.Count;
         }
     }
 }

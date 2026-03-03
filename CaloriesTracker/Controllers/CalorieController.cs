@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using CaloriesTracker.Models;
 using CaloriesTracker.Services;
 using System.Security.Claims;
 
@@ -21,7 +20,7 @@ namespace CaloriesTracker.Controllers
             var foods = await productService.GetUserProductsAsync(userId);
 
             ViewBag.Date = viewDate;
-            ViewBag.Foods = foods;
+            ViewBag.Foods = foods.OrderBy(n=>n.Name);
 
             return View(summary);
         }
@@ -63,6 +62,36 @@ namespace CaloriesTracker.Controllers
 
             await calorieService.UpdateIntakeQuantityAsync(id, quantity);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CopyDailyIntake(DateOnly sourceDate, DateOnly targetDate)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null) return Unauthorized();
+
+            if (targetDate > DateOnly.FromDateTime(DateTime.Today))
+            {
+                TempData["CopyMessage"] = "Target date cannot be in the future.";
+                return RedirectToAction("Index", new { date = targetDate });
+            }
+
+            var result = await calorieService.CopyDailyIntakeAsync(userId, sourceDate, targetDate);
+
+            if (result == -1)
+            {
+                TempData["CopyMessage"] = "Target date already has entries. Remove them first to copy.";
+            }
+            else if (result == 0)
+            {
+                TempData["CopyMessage"] = "No entries found on the source date to copy.";
+            }
+            else
+            {
+                TempData["CopyMessage"] = $"Copied {result} items to {targetDate.ToString()}.";
+            }
+
+            return RedirectToAction("Index", new { date = targetDate });
         }
 
     }
