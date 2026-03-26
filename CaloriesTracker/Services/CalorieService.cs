@@ -18,28 +18,14 @@ namespace CaloriesTracker.Services
             public DateTime Now => DateTime.Now;
         }
 
-    public class CalorieService
+    public class CalorieService(
+        AppDbContext context,
+        IDailySummaryService summaryService,
+        IUserStatsService userStatsService)
     {
-        private readonly AppDbContext _context;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IDailySummaryService _summaryService;
-        private readonly IUserStatsService _userStatsService;
-
-        public CalorieService(
-            AppDbContext context,
-            IDateTimeProvider dateTimeProvider,
-            IDailySummaryService summaryService,
-            IUserStatsService userStatsService)
-        {
-            _context = context;
-            _dateTimeProvider = dateTimeProvider;
-            _summaryService = summaryService;
-            _userStatsService = userStatsService;
-        }
-
         public async Task<List<DailyIntake>> GetDailyIntakeAsync(string userId, DateOnly date)
         {
-            return await _context.DailyIntakes
+            return await context.DailyIntakes
                 .Include(i => i.Product)
                 .Where(i => i.UserId == userId && i.Date == date)
                 .AsNoTracking()
@@ -48,7 +34,7 @@ namespace CaloriesTracker.Services
 
         public async Task AddIntakeAsync(string userId, int productId, decimal quantity, DateOnly date)
         {
-            var product = await _context.Products.FindAsync(productId);
+            var product = await context.Products.FindAsync(productId);
             if (product == null) throw new Exception("Product not found.");
 
             var intake = new DailyIntake
@@ -59,44 +45,47 @@ namespace CaloriesTracker.Services
                 Date = date
             };
 
-            _context.DailyIntakes.Add(intake);
-            await _context.SaveChangesAsync();
+            context.DailyIntakes.Add(intake);
+            await context.SaveChangesAsync();
         }
 
         public async Task RemoveIntakeAsync(int intakeId)
         {
-            var intake = await _context.DailyIntakes.FindAsync(intakeId);
+            var intake = await context.DailyIntakes.FindAsync(intakeId);
             if (intake != null)
             {
-                _context.DailyIntakes.Remove(intake);
-                await _context.SaveChangesAsync();
+                context.DailyIntakes.Remove(intake);
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task UpdateIntakeQuantityAsync(int intakeId, decimal newQuantity)
         {
-            var intake = await _context.DailyIntakes.FindAsync(intakeId);
+            var intake = await context.DailyIntakes.FindAsync(intakeId);
             if (intake != null)
             {
                 intake.Quantity = newQuantity;
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
 
         public async Task<DailySummary> GetDailySummaryAsync(string userId, DateOnly date, int dailyGoal)
         {
             var intakes = await GetDailyIntakeAsync(userId, date);
-            return _summaryService.Generate(intakes, date, dailyGoal);
+            var weigth = await context.DailyWeight
+                .Where(d => d.Date == date && d.UserId == userId)
+                .Select(u => u.WeightInKg).FirstOrDefaultAsync();
+            return summaryService.Generate(intakes, date, weigth);
         }
 
         public async Task<UserStats> GetUserStatsAsync(string userId, DateOnly startDate, DateOnly endDate)
         {
-            var intakes = await _context.DailyIntakes
+            var intakes = await context.DailyIntakes
                 .Include(i => i.Product)
                 .Where(i => i.UserId == userId && i.Date >= startDate && i.Date <= endDate)
                 .ToListAsync();
 
-            return _userStatsService.Generate(intakes, startDate, endDate);
+            return userStatsService.Generate(intakes, startDate, endDate);
         }
 
         // Copies all intakes from sourceDate to targetDate for the given user.
@@ -104,14 +93,14 @@ namespace CaloriesTracker.Services
         public async Task<int> CopyDailyIntakeAsync(string userId, DateOnly sourceDate, DateOnly targetDate)
         {
             // load source intakes
-            var sourceIntakes = await _context.DailyIntakes
+            var sourceIntakes = await context.DailyIntakes
                 .Where(i => i.UserId == userId && i.Date == sourceDate)
                 .ToListAsync();
 
             if (!sourceIntakes.Any()) return 0;
 
             // if target already has intakes, do not duplicate
-            var targetExists = await _context.DailyIntakes
+            var targetExists = await context.DailyIntakes
                 .AnyAsync(i => i.UserId == userId && i.Date == targetDate);
 
             if (targetExists) return -1;
@@ -124,8 +113,8 @@ namespace CaloriesTracker.Services
                 Date = targetDate
             }).ToList();
 
-            _context.DailyIntakes.AddRange(copies);
-            await _context.SaveChangesAsync();
+            context.DailyIntakes.AddRange(copies);
+            await context.SaveChangesAsync();
 
             return copies.Count;
         }

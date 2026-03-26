@@ -21,22 +21,41 @@
                     <div class="alert alert-info">@TempData["CopyMessage"]</div>
                 }
                 <div class="row">
-                    <div class="col-md-4">
-                        <h5>Calories</h5>
-                        <div class="progress mb-3">
-                            @{
-                                var progressPercentage = Math.Min(100, (int)(Model.TotalCalories / ((Model.DailyGoal == 0)?1600:Model.DailyGoal) * 100));
-                            }
-                            <div class="progress-bar" role="progressbar"
-                                 style="width: @progressPercentage%"
-                                 aria-valuenow="@progressPercentage"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100">
-                                @((int)Model.TotalCalories)/@((int)Model.DailyGoal)
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-6>">
+                                <h5>Calories</h5>
+                                <div class="progress mb-3">
+                                    @{
+                                        var progressPercentage = Math.Min(100, (int)(Model.TotalCalories / ((Model.DailyGoal == 0)?1600:Model.DailyGoal) * 100));
+                                    }
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: @progressPercentage%"
+                                         aria-valuenow="@progressPercentage"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        @((int)Model.TotalCalories)/@((int)Model.DailyGoal)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6>">
+                                <h5>Protein</h5>
+                                <div class="progress mb-3">
+                                    @{
+                                        var proteinPercentage = Math.Min(100, (int)(Model.TotalProtein / ((Model.ProteinGoal == 0) ? 100 : Model.ProteinGoal) * 100));
+                                    }
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: @proteinPercentage%"
+                                         aria-valuenow="@proteinPercentage"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                        @((int)Model.TotalProtein)/@((int)Model.ProteinGoal)
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="row">
                             <div class="col-4 text-center">
                                 <h6>Protein</h6>
