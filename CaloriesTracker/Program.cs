@@ -23,6 +23,9 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+// Register mock email sender for password reset
+builder.Services.AddSingleton<CaloriesTracker.Services.Interfaces.IEmailSender, CaloriesTracker.Services.MockEmailSender>();
+
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDailySummaryService, DailySummaryService>();

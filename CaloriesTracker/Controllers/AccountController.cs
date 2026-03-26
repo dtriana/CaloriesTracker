@@ -11,12 +11,14 @@ namespace CaloriesTracker.Controllers
     public class AccountController : Controller
     {
         private readonly IUserService _userService;
+        private readonly Services.Interfaces.IEmailSender _emailSender;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IUserService userService, ILogger<AccountController> logger)
+        public AccountController(IUserService userService, ILogger<AccountController> logger, Services.Interfaces.IEmailSender emailSender)
         {
             _userService = userService;
             _logger = logger;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -51,6 +53,54 @@ namespace CaloriesTracker.Controllers
         {
             TempData["ReturnUrl"] = returnUrl;
             return View(new LoginViewModel());
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View(new Models.ViewModels.Account.ForgotPasswordViewModel());
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(Models.ViewModels.Account.ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var info = await _userService.GeneratePasswordResetTokenAsync(model.Email);
+            // Always show confirmation regardless of whether user exists
+            if (info != null)
+            {
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = info.Value.userId, token = System.Net.WebUtility.UrlEncode(info.Value.token) }, Request.Scheme!);
+                var html = $"Please reset your password by <a href='{callbackUrl}'>clicking here</a>.";
+                await _emailSender.SendEmailAsync(model.Email, "Reset Password", html);
+                _logger.LogInformation("Password reset email queued for {Email}.", model.Email);
+            }
+
+            return View("ForgotPasswordConfirmation");
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string userId, string token)
+        {
+            var vm = new Models.ViewModels.Account.ResetPasswordViewModel { UserId = userId, Token = token };
+            return View(vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(Models.ViewModels.Account.ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var decodedToken = System.Net.WebUtility.UrlDecode(model.Token);
+            var result = await _userService.ResetPasswordAsync(model.UserId, decodedToken!, model.Password);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User {UserId} successfully reset password.", model.UserId);
+                return View("ResetPasswordConfirmation");
+            }
+
+            AddErrors(result.Errors, model.UserId);
+            return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

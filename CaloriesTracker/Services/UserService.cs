@@ -28,6 +28,25 @@ namespace CaloriesTracker.Services
             _logger         = logger;
         }
 
+        public async Task<(string userId, string token)?> GeneratePasswordResetTokenAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return null;
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            return (user.Id, token);
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(string userId, string token, string newPassword)
+        {
+            var user = await GetUserOrThrowAsync(userId);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            if (result == IdentityResult.Success)
+                _ = await _userManager.ResetAccessFailedCountAsync(user);
+            return result;
+        }
+
         public Task<IdentityResult> RegisterAsync(RegisterViewModel model)
         {
             var user = new User

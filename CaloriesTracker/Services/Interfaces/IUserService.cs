@@ -15,5 +15,8 @@ namespace CaloriesTracker.Services.Interfaces
         Task<decimal> GetCurrentDailyGoalAsync(string userId);
         Task<IdentityResult> UpdateDailyGoalAsync(string userId, decimal newGoal);
         Task<IdentityResult> DeleteUserAsync(string userId);
+        // Password reset helpers
+        Task<(string userId, string token)?> GeneratePasswordResetTokenAsync(string email);
+        Task<IdentityResult> ResetPasswordAsync(string userId, string token, string newPassword);
     }
 }

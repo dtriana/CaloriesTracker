@@ -1,11 +1,11 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.1.1">
+<Project Sdk="Aspire.AppHost.Sdk/13.2.0">
 
   <ItemGroup>
     <ProjectReference Include="..\CaloriesTracker\CaloriesTracker.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.1.2" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="13.2.0" />
   </ItemGroup>
 
   <PropertyGroup>
